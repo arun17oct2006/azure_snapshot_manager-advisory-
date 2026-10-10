@@ -1,0 +1,22 @@
+# Render Blueprint: Render reads this when you choose "New > Blueprint".
+# Secrets (sync: false) are entered once in the Render dashboard, never in git.
+services:
+  - type: web
+    name: azure-snapshot-manager
+    runtime: docker
+    plan: free
+    healthCheckPath: /healthz
+    envVars:
+      - key: DemoMode
+        value: "true"
+      - key: DEMO_USER
+        value: demo
+      - key: DEMO_PASSWORD
+        sync: false
+      # Service principal used by DefaultAzureCredential to read your subscription
+      - key: AZURE_TENANT_ID
+        sync: false
+      - key: AZURE_CLIENT_ID
+        sync: false
+      - key: AZURE_CLIENT_SECRET
+        sync: false

@@ -1,0 +1,18 @@
+# Normalize all text files to LF in the repository; Git converts to the
+# platform's native line ending on checkout (CRLF on Windows, LF elsewhere).
+# This stops the "LF will be replaced by CRLF" warnings and keeps diffs
+# clean regardless of which OS a contributor is on.
+* text=auto
+
+*.cs      text diff=csharp
+*.csproj  text
+*.sln     text eol=crlf
+*.json    text
+*.md      text
+*.yml     text
+*.yaml    text
+
+# Never normalize binaries
+*.png binary
+*.jpg binary
+*.ico binary

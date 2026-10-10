@@ -1,0 +1,7 @@
+﻿bin/
+obj/
+publish/
+desktop/dist/
+*.zip
+.vs/
+appsettings.Development.json
