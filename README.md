@@ -153,9 +153,7 @@ Domain entities (`Subscription`, `ParentDisk`, `Snapshot`, `UserPreference`, `Sc
 
 ---
 
-## Screenshots
 
-_Add a screenshot of the dashboard (`docs/screenshots/dashboard.png`) and a `dotnet test` run here before sharing this repo publicly._
 
 ---
 
