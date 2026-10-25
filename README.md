@@ -231,14 +231,6 @@ Once the deployed app responds correctly behind real Entra ID auth, follow Partn
 
 ---
 
-## Free demo hosting (Render)
-
-The repo includes a `Dockerfile` and [`render.yaml`](render.yaml). The app runs in **demo mode** (`DemoMode=true`): in-memory storage plus a username/password prompt, and a read-only Azure service principal supplied through `AZURE_TENANT_ID`, `AZURE_CLIENT_ID`, and `AZURE_CLIENT_SECRET`. The app refuses to start in demo mode without `DEMO_PASSWORD`.
-
-> [!WARNING]
-> Free instances sleep when idle and lose in-memory data on restart, so this is for demos, not production.
-
----
 
 ## Building the desktop app yourself
 
