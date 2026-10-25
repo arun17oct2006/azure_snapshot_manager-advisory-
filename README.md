@@ -88,21 +88,53 @@ close the window.
 
 ## Architecture
 
+```mermaid
+flowchart TD
+    subgraph Api["AzureSnapshotManager.Api"]
+        direction TB
+        Controllers["Controllers<br/>DashboardController, RetentionController"]
+        Auth["Auth<br/>Entra ID, DevelopmentAuthHandler"]
+        Dashboard["Static dashboard<br/>wwwroot/index.html"]
+        DI["DI wiring<br/>Program.cs"]
+    end
+
+    subgraph Infra["AzureSnapshotManager.Infrastructure"]
+        direction TB
+        Discovery["Discovery<br/>ResourceGraphDiscoveryEngine"]
+        Pricing["Pricing<br/>RetailPricesApiService"]
+        Advisory["Advisory<br/>AdvisoryEngine"]
+        Storage["Storage<br/>TableStorageRepository"]
+        Export["Export<br/>CsvExportService"]
+        Security["Security<br/>ManagedIdentityAuthProvider"]
+        Billing["Billing<br/>MarketplaceMeteringService"]
+    end
+
+    subgraph Core["AzureSnapshotManager.Core"]
+        direction TB
+        Models["Models<br/>Subscription, ParentDisk, Snapshot,<br/>UserPreference, ScanLog"]
+        Interfaces["Interfaces<br/>No Azure SDK dependency"]
+    end
+
+    Dashboard --> Controllers
+    Auth --> Controllers
+    DI --> Controllers
+    Controllers --> Advisory
+    Controllers --> Export
+
+    Advisory --> Discovery
+    Advisory --> Pricing
+    Advisory --> Storage
+    Security --> Discovery
+    Billing --> Storage
+
+    Api --> Infra
+    Infra --> Core
+
+    Discovery -.-> ARG[("Azure Resource Graph")]
+    Pricing -.-> RPA[("Azure Retail Prices API")]
+    Storage -.-> TBL[("Azure Table Storage")]
+    Billing -.-> MKT[("Partner Center Metering")]
 ```
-+------------------------------+
-|   AzureSnapshotManager.Api   |  Controllers, auth, DI wiring, static dashboard
-+---------------+---------------+
-                | depends on
-+---------------v---------------+
-| AzureSnapshotManager.Infra-   |  Resource Graph, Retail Prices API, Table
-| structure                     |  Storage, Advisory engine, CSV export,
-|                               |  Managed Identity, Marketplace metering
-+---------------+---------------+
-                | depends on
-+---------------v---------------+
-|  AzureSnapshotManager.Core    |  Domain models + interfaces, zero Azure
-|                               |  SDK dependency, fully unit-testable
-+-------------------------------+
 ```
 
 `Core` has no outgoing dependencies. That's what lets
