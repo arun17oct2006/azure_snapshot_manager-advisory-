@@ -216,40 +216,8 @@ orphan detection, multi-resource grouping, retention-rule exclusion, and
 portal deep-link generation. See
 [`AdvisoryEngineTests.cs`](tests/AzureSnapshotManager.Tests/AdvisoryEngineTests.cs).
 
-## Deploying to Azure Marketplace
 
-### 1. Partner Center setup
-1. Create your offer (Azure Application / Managed App, or SaaS) in [Partner Center](https://partner.microsoft.com/dashboard).
-2. Upload [`deploy/mainTemplate.json`](deploy/mainTemplate.json) and [`deploy/createUiDefinition.json`](deploy/createUiDefinition.json) as your ARM package.
-3. If billing on usage, define metering dimensions matching what [`MarketplaceMeteringService`](src/AzureSnapshotManager.Infrastructure/Billing/MarketplaceMeteringService.cs) sends.
-4. Register a multi-tenant Entra ID app for dashboard sign-in.
 
-### 2. Provision and publish
-
-```bash
-az deployment group create \
-  --resource-group rg-snapshotmgr-test \
-  --template-file deploy/mainTemplate.json \
-  --parameters appName=snapmgrtest aadTenantId=<tenant-id> aadClientId=<client-id>
-
-dotnet publish src/AzureSnapshotManager.Api -c Release -o ./publish
-cd publish && zip -r ../app.zip . && cd ..
-az webapp deploy --resource-group rg-snapshotmgr-test --name snapmgrtest-app --src-path app.zip --type zip
-```
-
-### 3. Submit
-
-Once the deployed app responds correctly behind real Entra ID auth, follow
-Partner Center's **Preview → Go live** flow.
-
-## Free demo hosting (Render)
-
-The repo includes a `Dockerfile` and [`render.yaml`](render.yaml). The app runs
-in **demo mode** (`DemoMode=true`): in-memory storage plus a username/password
-prompt, and a read-only Azure service principal supplied through
-`AZURE_TENANT_ID`, `AZURE_CLIENT_ID` and `AZURE_CLIENT_SECRET`. The app refuses
-to start in demo mode without `DEMO_PASSWORD`. Free instances sleep when idle
-and lose in-memory data on restart, so this is for demos, not production.
 
 ## Building the desktop app yourself
 
