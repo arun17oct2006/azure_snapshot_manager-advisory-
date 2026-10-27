@@ -24,8 +24,6 @@ Built as an Azure Marketplace SaaS offer: ARM/`createUiDefinition` packaging, Ma
 - [Screenshots](#screenshots)
 - [Local development](#local-development)
 - [Testing](#testing)
-- [Deploying to Azure Marketplace](#deploying-to-azure-marketplace)
-- [Free demo hosting (Render)](#free-demo-hosting-render)
 - [Building the desktop app yourself](#building-the-desktop-app-yourself)
 - [Known limitations](#known-limitations)
 
