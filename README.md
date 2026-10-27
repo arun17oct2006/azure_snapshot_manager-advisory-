@@ -201,33 +201,7 @@ Covers [`AdvisoryEngine`](src/AzureSnapshotManager.Infrastructure/Advisory/Advis
 
 ---
 
-## Deploying to Azure Marketplace
 
-### 1. Partner Center setup
-
-1. Create your offer (Azure Application / Managed App, or SaaS) in [Partner Center](https://partner.microsoft.com/dashboard).
-2. Upload [`deploy/mainTemplate.json`](deploy/mainTemplate.json) and [`deploy/createUiDefinition.json`](deploy/createUiDefinition.json) as your ARM package.
-3. If billing on usage, define metering dimensions matching what [`MarketplaceMeteringService`](src/AzureSnapshotManager.Infrastructure/Billing/MarketplaceMeteringService.cs) sends.
-4. Register a multi-tenant Entra ID app for dashboard sign-in.
-
-### 2. Provision and publish
-
-```bash
-az deployment group create \
-  --resource-group rg-snapshotmgr-test \
-  --template-file deploy/mainTemplate.json \
-  --parameters appName=snapmgrtest aadTenantId=<tenant-id> aadClientId=<client-id>
-
-dotnet publish src/AzureSnapshotManager.Api -c Release -o ./publish
-cd publish && zip -r ../app.zip . && cd ..
-az webapp deploy --resource-group rg-snapshotmgr-test --name snapmgrtest-app --src-path app.zip --type zip
-```
-
-### 3. Submit
-
-Once the deployed app responds correctly behind real Entra ID auth, follow Partner Center's **Preview → Go live** flow.
-
----
 
 
 ## Building the desktop app yourself
