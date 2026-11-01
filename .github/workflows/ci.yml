@@ -1,10 +1,16 @@
-name: CI
+name: .NET Build, Test & Coverage
 
 on:
   push:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  checks: write
+  pull-requests: write
 
 jobs:
   build-and-test:
@@ -25,9 +31,30 @@ jobs:
       - name: Build
         run: dotnet build AzureSnapshotManager.sln --no-restore --configuration Release
 
-      - name: Test
-        run: dotnet test AzureSnapshotManager.sln --no-build --configuration Release --verbosity normal
+      - name: Test with coverage
+        run: >
+          dotnet test AzureSnapshotManager.sln
+          --no-build --configuration Release
+          --logger "trx;LogFileName=test-results.trx"
+          --results-directory ./TestResults
+          --collect:"XPlat Code Coverage"
 
-      - name: Check for outdated/vulnerable packages
+      - name: Publish test results
+        if: always()
+        uses: dorny/test-reporter@v1
+        with:
+          name: .NET test results
+          path: TestResults/**/*.trx
+          reporter: dotnet-trx
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: TestResults/**/coverage.cobertura.xml
+          if-no-files-found: warn
+
+      - name: Check for vulnerable packages
         run: dotnet list AzureSnapshotManager.sln package --vulnerable --include-transitive
         continue-on-error: true
