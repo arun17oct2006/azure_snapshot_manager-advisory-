@@ -1,0 +1,34 @@
+name: .NET Code Metrics & Build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.x' # Update to your target .NET version
+
+    - name: Restore Dependencies
+      run: dotnet restore
+
+    - name: Build Project
+      run: dotnet build --no-restore --configuration Release
+
+    - name: Run Tests with Coverage
+      run: dotnet test --no-build --configuration Release --logger "trx" --collect:"XPlat Code Coverage"
+
+    - name: Publish Test Results
+      uses: dorny/test-refreshed@v2 # Optional, or standard actions/upload-artifact
+      with:
+        name: test-results
+        path: '**/*.trx'
