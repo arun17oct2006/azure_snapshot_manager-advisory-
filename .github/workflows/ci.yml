@@ -39,6 +39,20 @@ jobs:
           --results-directory ./TestResults
           --collect:"XPlat Code Coverage"
 
+      - name: Coverage summary
+        if: always()
+        shell: bash
+        run: |
+          f=$(find TestResults -name coverage.cobertura.xml | head -n 1)
+          if [ -z "$f" ]; then
+            echo "No coverage file found" >> $GITHUB_STEP_SUMMARY
+            exit 0
+          fi
+          rate=$(grep -o 'line-rate="[^"]*"' "$f" | head -n 1 | cut -d'"' -f2)
+          pct=$(awk "BEGIN {printf \"%.1f\", $rate*100}")
+          echo "## Code coverage" >> $GITHUB_STEP_SUMMARY
+          echo "Line coverage: **${pct}%**" >> $GITHUB_STEP_SUMMARY
+
       - name: Publish test results
         if: always()
         uses: dorny/test-reporter@v1
