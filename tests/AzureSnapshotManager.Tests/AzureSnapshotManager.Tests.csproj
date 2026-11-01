@@ -17,6 +17,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\AzureSnapshotManager.Core\AzureSnapshotManager.Core.csproj" />
     <ProjectReference Include="..\..\src\AzureSnapshotManager.Infrastructure\AzureSnapshotManager.Infrastructure.csproj" />
+       <PackageReference Include="coverlet.collector" Version="6.0.2" />
   </ItemGroup>
 
 </Project>
