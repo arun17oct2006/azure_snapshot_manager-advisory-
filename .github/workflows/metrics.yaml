@@ -1,4 +1,4 @@
-name: .NET Code Metrics & Build
+name: .NET Build, Test & Coverage
 
 on:
   push:
@@ -6,29 +6,54 @@ on:
   pull_request:
     branches: [ main ]
 
+permissions:
+  contents: read
+  checks: write          # needed by the test reporter to publish results
+  pull-requests: write   # lets the reporter comment on PRs
+
 jobs:
-  analyze:
+  build-and-test:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: '8.x' # Update to your target .NET version
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
 
-    - name: Restore Dependencies
-      run: dotnet restore
+      - name: Restore
+        run: dotnet restore AzureSnapshotManager.sln
 
-    - name: Build Project
-      run: dotnet build --no-restore --configuration Release
+      - name: Build
+        run: dotnet build AzureSnapshotManager.sln --no-restore --configuration Release
 
-    - name: Run Tests with Coverage
-      run: dotnet test --no-build --configuration Release --logger "trx" --collect:"XPlat Code Coverage"
+      - name: Test with coverage
+        run: >
+          dotnet test AzureSnapshotManager.sln
+          --no-build --configuration Release
+          --logger "trx;LogFileName=test-results.trx"
+          --results-directory ./TestResults
+          --collect:"XPlat Code Coverage"
 
-    - name: Publish Test Results
-      uses: dorny/test-refreshed@v2 # Optional, or standard actions/upload-artifact
-      with:
-        name: test-results
-        path: '**/*.trx'
+      - name: Publish test results
+        if: always()          # run even when tests fail, so you see what broke
+        uses: dorny/test-reporter@v1
+        with:
+          name: .NET test results
+          path: TestResults/**/*.trx
+          reporter: dotnet-trx
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: TestResults/**/coverage.cobertura.xml
+          if-no-files-found: warn
+
+      - name: Check for vulnerable packages
+        run: dotnet list AzureSnapshotManager.sln package --vulnerable --include-transitive
+        continue-on-error: true
