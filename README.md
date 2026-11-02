@@ -191,13 +191,21 @@ dotnet user-secrets set "Azure:TableStorageEndpoint" "https://<yourstorageaccoun
 
 ## Testing
 
-```bash
-dotnet test AzureSnapshotManager.sln
-```
+Run the full suite from the repository root:
 
-Covers [`AdvisoryEngine`](src/AzureSnapshotManager.Infrastructure/Advisory/AdvisoryEngine.cs): orphan detection, multi-resource grouping, retention-rule exclusion, and portal deep-link generation. See [`AdvisoryEngineTests.cs`](tests/AzureSnapshotManager.Tests/AdvisoryEngineTests.cs).
+    dotnet test AzureSnapshotManager.sln
 
----
+Results (latest run): 10 tests, 10 passing.
+
+- **Unit tests (5):** `AzureSnapshotManager.Tests`, covering orphan detection, grouping, retention rules, and portal deep links. No Azure access needed.
+- **UI tests (5):** `AzureSnapshotManager.SeleniumTests`, driving Chrome against the dashboard. Start the app first:
+
+      cd src/AzureSnapshotManager.Api
+      dotnet run --urls http://localhost:5080
+
+  Then run the tests in a second window.
+
+See `test_results.txt` for the full output.
 
 
 
