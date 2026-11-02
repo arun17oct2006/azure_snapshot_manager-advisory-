@@ -7,10 +7,11 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 </div>
+> **Status:** v1.0 runs local audits against your Azure subscription. Multi-tenant SaaS hosting and Partner Center metered billing are designed (see Architecture) but not complete.
 
 Finds orphaned Azure disk snapshots (snapshots left behind after their source disk is deleted) that are silently costing money, and surfaces them in a dashboard with one-click portal links, CSV export, and configurable retention rules.
 
-Built as an Azure Marketplace SaaS offer: ARM/`createUiDefinition` packaging, Managed Identity auth, per-tenant Table Storage isolation, and Partner Center metered billing are all part of the design.
+Built as an Azure Marketplace SaaS offer: The Marketplace packaging (ARM template, createUiDefinition), Managed Identity auth, per-tenant Table Storage isolation, and metered billing are in the codebase as the design for a hosted offer. See Known limitations for what is not yet complete..
 
 ---
 
@@ -195,17 +196,19 @@ Run the full suite from the repository root:
 
     dotnet test AzureSnapshotManager.sln
 
-Results (latest run): 10 tests, 10 passing.
+Latest run: 10 tests, 10 passing.
 
-- **Unit tests (5):** `AzureSnapshotManager.Tests`, covering orphan detection, grouping, retention rules, and portal deep links. No Azure access needed.
-- **UI tests (5):** `AzureSnapshotManager.SeleniumTests`, driving Chrome against the dashboard. Start the app first:
+- **Unit tests (5)**, project `AzureSnapshotManager.Tests`: orphan detection, grouping, retention-rule exclusion, and portal deep links. No Azure access needed.
+- **UI tests (5)**, project `AzureSnapshotManager.SeleniumTests`: page load, subscription input, audit button activation, and export control, driven through Chrome.
 
-      cd src/AzureSnapshotManager.Api
-      dotnet run --urls http://localhost:5080
+The UI tests need the app running first. In one terminal:
 
-  Then run the tests in a second window.
+    cd src/AzureSnapshotManager.Api
+    dotnet run --urls http://localhost:5080
 
-See `test_results.txt` for the full output.
+In a second terminal, run `dotnet test` as above.
+
+Full output from the last run: [test_results.txt](test_results.txt).
 
 
 
